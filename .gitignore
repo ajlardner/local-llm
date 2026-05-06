@@ -1,0 +1,5 @@
+models/
+projects/
+opencode-data/
+!opencode-data/config/
+.env

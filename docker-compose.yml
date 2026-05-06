@@ -1,0 +1,53 @@
+services:
+  llama-server:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: llama-server
+    volumes:
+      - ./models:/models
+    command: >
+      --model /models/Qwen3.5-35B-A3B-Q5_K_M.gguf
+      --ctx-size 128000
+      --host 0.0.0.0
+      --port 8080
+      --no-mmap
+      -ot ".ffn_.*_exps.=CPU"
+    ports: 
+      - "127.0.0.1:8080:8080"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+  opencode-server:
+    image: ghcr.io/anomalyco/opencode:latest:latest
+    container_name: opencode-server
+    ports:
+    - "4096:4096"
+    environment:
+    - OPENCODE_SERVER_USERNAME=${OPENCODE_SERVER_USERNAME}
+    - OPENCODE_SERVER_PASSWORD=${OPENCODE_SERVER_PASSWORD}
+    volumes:
+      - ./opencode-data:/root/.local/share/opencode
+      - ./opencode-data/workspace:/workspace
+      - ./opencode-data/config:/root/.config/opencode
+    command: cd workspace && opencode serve --host 0.0.0.0 --port 4096
+    restart: unless-stopped
+    depends_on:
+    - llama-server
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    ports:
+      - "8081:8080"
+    environment:
+      - OPENAI_API_BASE_URL=http://llama-server:8080/v1
+      - OPENAI_API_KEY=none
+    depends_on:
+      - llama-server
+    restart: unless-stopped
+
+  

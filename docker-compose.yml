@@ -22,8 +22,11 @@ services:
               capabilities: [gpu]
     restart: unless-stopped
   opencode-server:
-    image: ghcr.io/anomalyco/opencode:latest:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.opencode
     container_name: opencode-server
+    command: serve --hostname 0.0.0.0 --port 4096
     ports:
     - "4096:4096"
     environment:
@@ -33,7 +36,6 @@ services:
       - ./opencode-data:/root/.local/share/opencode
       - ./opencode-data/workspace:/workspace
       - ./opencode-data/config:/root/.config/opencode
-    command: cd workspace && opencode serve --host 0.0.0.0 --port 4096
     restart: unless-stopped
     depends_on:
     - llama-server
@@ -48,6 +50,8 @@ services:
       - OPENAI_API_KEY=none
     depends_on:
       - llama-server
+    volumes:
+    - ./open-webui-data:/app/backend/data
     restart: unless-stopped
 
   

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@opencode-ai/plugin": "1.14.46",
+    "superpowers": "git+https://github.com/obra/superpowers.git"
+  }
+}

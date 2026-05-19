@@ -1,5 +1,6 @@
 models/
 projects/
 opencode-data/
+open-webui-data/
 !opencode-data/config/
 .env

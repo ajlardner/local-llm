@@ -1,5 +1,5 @@
 # run llama-server using podman
-MODELS_PATH=${MODEL_PATH:-$HOME/projects/local-llm/models}
+MODELS_PATH=${MODEL_PATH:-$HOME/local-llm/models}
 podman run -d \
   --name llama-server \
   --replace \
@@ -15,6 +15,7 @@ podman run -d \
   --flash-attn on \
   --parallel 1 \
   --fit on \
+  --fit-target 4096 \
   --cache-type-k q8_0 \
   --cache-type-v q8_0 \
   --ctx-size 65536 \
